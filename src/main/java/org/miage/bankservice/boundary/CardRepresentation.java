@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.HandlerMapping;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.Map;
@@ -67,17 +70,27 @@ public class CardRepresentation {
         Optional<Card> body = cardResource.findById(cardId);
         if (body.isPresent()) {
             Card card = body.get();
-
+            final boolean[] tryCash = {false};
             fields.forEach((f, v) -> {
                 LOGGER.warn(f.toString());
                 LOGGER.warn(v.toString());
+
+                if (f.toString() == "cash") {
+                    // L'utilisateur a tenté de PATCH son solde bancaire
+                    tryCash[0] = true;
+                }
 
                 Field field = ReflectionUtils.findField(Card.class, f.toString());
                 field.setAccessible(true);
                 ReflectionUtils.setField(field, card, v);
             });
+            if(tryCash[0] == true){
+                // L'utilisateur a tenté de PATCH son solde bancaire
+                String errorMessage = "{\"message\":\"Request not processed, reason is : You cannot create money\"}";
+                return ResponseEntity.badRequest().body(errorMessage);
+            }
             validator.validate(new CardInput(card.getNumber(), card.getCode(),
-                    card.getCryptogram(), card.isBlocked(), card.isGps(), card.getSlidinglimit(), card.isContactless()));
+                    card.getCryptogram(), card.isBlocked(), card.isGps(), card.getSlidinglimit(), card.isContactless(), card.getCash()));
             card.setIdcard(cardId);
             cardResource.save(card);
             return ResponseEntity.ok().build();

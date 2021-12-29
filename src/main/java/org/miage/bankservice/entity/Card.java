@@ -29,5 +29,8 @@ public class Card {
     private boolean gps = true;
     private int slidinglimit = 5000;
     private boolean contactless = true;
+    // Obligation de placer 300€ à l'ouverture d'un compte
+    private String cash = "300.00";
+
 //    private Account account; // mapped by card : card est le nom de la variable dans Account
 }

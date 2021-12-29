@@ -31,4 +31,7 @@ public class CardInput {
     private int slidinglimit;
     @NotNull
     private boolean contactless;
+    @NotNull
+    @NotBlank
+    private String cash;
 }

@@ -16,8 +16,8 @@ public class AccountValidator {
     this.validator = validator;
   }
 
-  public void validate(AccountInput account) {
-    Set<ConstraintViolation<AccountInput>> violations = validator.validate(account);
+  public void validate(AccountInput accountInput) {
+    Set<ConstraintViolation<AccountInput>> violations = validator.validate(accountInput);
     if (!violations.isEmpty()) {
       throw new ConstraintViolationException(violations);
     }

@@ -21,12 +21,13 @@ public class AccountAssembler implements RepresentationModelAssembler<Account, E
   @Override
   public EntityModel<Account> toModel(Account account) {
     return EntityModel.of(account,
-                   linkTo(methodOn(AccountRepresentation.class)
-                          .getOneAccount(account.getId())).withSelfRel(),
-                    linkTo(methodOn(CardRepresentation.class)
-                            .getOneCard(account.getFkidcard())).withSelfRel(),
-							     linkTo(methodOn(AccountRepresentation.class)
-							            .getAllAccounts()).withRel("collection"));
+            linkTo(methodOn(AccountRepresentation.class)
+                        .getOneAccount(account.getId())).withSelfRel(),
+            linkTo(methodOn(CardRepresentation.class)
+                        .getOneCard(account.getFkidcard())).withSelfRel()
+                        .withRel("card"),
+			linkTo(methodOn(AccountRepresentation.class)
+			            .getAllAccounts()).withRel("collection"));
   }
 
     //    _links de tous les accounts

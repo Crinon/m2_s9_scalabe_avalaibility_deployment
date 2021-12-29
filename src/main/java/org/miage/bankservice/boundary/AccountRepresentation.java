@@ -72,7 +72,7 @@ public class AccountRepresentation {
     public ResponseEntity<?> saveAccount(@RequestBody @Valid AccountInput account)  {
         Card newCard = new Card();
         cardValidator.validate(new CardInput(newCard.getNumber(), newCard.getCode(),
-                newCard.getCryptogram(), newCard.isBlocked(), newCard.isGps(), newCard.getSlidinglimit(), newCard.isContactless()));
+                newCard.getCryptogram(), newCard.isBlocked(), newCard.isGps(), newCard.getSlidinglimit(), newCard.isContactless(), newCard.getCash()));
         logger.warn(newCard.getNumber());
 
         Account account2Save = new Account(
@@ -83,7 +83,9 @@ public class AccountRepresentation {
                 account.getPassportNumber(),
                 account.getPhoneGlobal(),
                 account.getIban(),
-                newCard.getIdcard()
+                newCard.getIdcard(),
+                account.getTransfertsReceived(),
+                account.getTransfertsSent()
         );
         Card cardsaved =cardResource.save(newCard);
         Account saved = ir.save(account2Save);

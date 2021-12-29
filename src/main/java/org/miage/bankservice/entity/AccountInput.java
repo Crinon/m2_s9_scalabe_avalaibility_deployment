@@ -1,5 +1,6 @@
 package org.miage.bankservice.entity;
 
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -7,6 +8,10 @@ import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.mapping.Collection;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -38,6 +43,8 @@ public class AccountInput {
 
     private Card card;
 
+    private Set<Transfert> transfertsReceived;
+    private Set<Transfert> transfertsSent;
 }
 
 

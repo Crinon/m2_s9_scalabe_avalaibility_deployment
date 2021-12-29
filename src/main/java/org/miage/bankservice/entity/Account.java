@@ -1,12 +1,15 @@
 package org.miage.bankservice.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Set;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.mapping.Collection;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 @Entity     // ORM: mapping des instances de la classe comme nuplet dans H2
@@ -29,6 +32,12 @@ public class Account implements Serializable {
     private String phoneGlobal;
     private String iban;
 
-
     private String fkidcard;
+
+    @OneToMany( targetEntity=Transfert.class, mappedBy="accountTo" )
+    private Set<Transfert> transfertsReceived;
+    @OneToMany( targetEntity=Transfert.class, mappedBy="accountFrom" )
+    private Set<Transfert> transfertsSent;
+
+
 }

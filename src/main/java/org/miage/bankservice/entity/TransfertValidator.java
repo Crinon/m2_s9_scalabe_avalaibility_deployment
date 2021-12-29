@@ -8,16 +8,16 @@ import javax.validation.Validator;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CardValidator {
+public class TransfertValidator {
 
     private Validator validator;
 
-    CardValidator(Validator validator) {
+    TransfertValidator(Validator validator) {
         this.validator = validator;
     }
 
-    public void validate(CardInput cardInput) {
-        Set<ConstraintViolation<CardInput>> violations = validator.validate(cardInput);
+    public void validate(TransfertInput transfertInput) {
+        Set<ConstraintViolation<TransfertInput>> violations = validator.validate(transfertInput);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
