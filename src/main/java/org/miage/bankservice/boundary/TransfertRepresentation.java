@@ -1,39 +1,22 @@
 package org.miage.bankservice.boundary;
 
-import org.miage.bankservice.assembler.CardAssembler;
 import org.miage.bankservice.assembler.TransfertAssembler;
 import org.miage.bankservice.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.lang.reflect.Field;
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping(value = "/transferts", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,17 +26,15 @@ public class TransfertRepresentation {
     private final CardResource cardResource;
     private final AccountResource accountResource;
     private final TransfertAssembler transfertAssembler;
-    private final TransfertValidator transfertValidator;
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountRepresentation.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransfertRepresentation.class);
 
     public TransfertRepresentation(TransfertResource transfertResource,
                                    TransfertAssembler transfertAssembler,
-                                   TransfertValidator transfertValidator,
                                    AccountResource accountResource,
                                    CardResource cardResource) {
         this.transfertResource = transfertResource;
         this.transfertAssembler = transfertAssembler;
-        this.transfertValidator = transfertValidator;
         this.accountResource = accountResource;
         this.cardResource = cardResource;
     }
@@ -80,12 +61,12 @@ public class TransfertRepresentation {
         Optional<Account> optionalAccountFrom = accountResource.findById(transfertinput.getIdaccountFrom());
         Optional<Account> optionalAccountTo = accountResource.findById(transfertinput.getIdaccountTo());
         if (!optionalAccountFrom.isPresent()) {
-            // L'utilisateur a tenté de PATCH son solde bancaire
+            // L'utilisateur n'utilise pas son id de compte
             String errorMessage = "{\"message\":\"Request not processed, reason is : Sender account not found\"}";
             return ResponseEntity.badRequest().body(errorMessage);
         }
         if (!optionalAccountTo.isPresent()) {
-            // L'utilisateur a tenté de PATCH son solde bancaire
+            // L'utilisateur utilise un id de compte destinataire n'existant pas
             String errorMessage = "{\"message\":\"Request not processed, reason is : Reciever account not found\"}";
             return ResponseEntity.badRequest().body(errorMessage);
         }

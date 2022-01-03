@@ -1,14 +1,14 @@
 package org.miage.bankservice.entity;
 
-import javax.validation.constraints.*;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +21,9 @@ public class TransfertInput {
     @DecimalMax("5000.00")
     private Double amount;
     @NotNull
+    @NotBlank
     private String idaccountFrom;
     @NotNull
+    @NotBlank
     private String idaccountTo;
 }

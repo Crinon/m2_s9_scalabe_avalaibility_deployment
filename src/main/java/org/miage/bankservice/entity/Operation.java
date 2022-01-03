@@ -1,6 +1,5 @@
 package org.miage.bankservice.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,18 +11,26 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
-@Entity     // ORM: mapping des instances de la classe comme nuplet dans H2
+@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class Transfert {
+public class Operation {
+    public enum Category {
+        SUBSCRIPTION, CARS, TAXES, EDUCATION, DAILYLIFE, HEALTH;
+    }
     @Id
-    private String idtransfert;
-    private LocalDateTime localdatetime;
+    private String id;
+    private LocalDateTime localDateTime;
+    private String wording;
     private Double amount;
-    @JsonBackReference
+    private Double conversionRate;
+    private String recipientName;
+    private Category category;
+    private Account.Country countryShop;
+
     @ManyToOne()
     @JoinColumn(name="accountFrom_id", nullable=false)
     private Account accountFrom;

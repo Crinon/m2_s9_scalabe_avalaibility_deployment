@@ -1,19 +1,19 @@
 package org.miage.bankservice.entity;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Set;
-import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.mapping.Collection;
-import org.springframework.data.rest.core.annotation.RestResource;
+import lombok.Setter;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.io.Serializable;
+import java.util.Set;
 
 @Entity     // ORM: mapping des instances de la classe comme nuplet dans H2
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account implements Serializable {
