@@ -2,6 +2,7 @@ package org.miage.bankservice.boundary;
 
 import org.miage.bankservice.assembler.TransfertAssembler;
 import org.miage.bankservice.entity.*;
+import org.miage.bankservice.miscellaneous.Exchangerate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.server.ExposesResourceFor;
@@ -45,6 +46,14 @@ public class TransfertRepresentation {
         return ResponseEntity.ok(transfertAssembler.toCollectionModel(transfertResource.findAll()));
     }
 
+    // GET all transfert from account
+    @GetMapping(value = "/account/{accountId}")
+    public ResponseEntity<?> getAllTransfertByAccount(@PathVariable("accountId") String id) {
+        return ResponseEntity.ok(transfertAssembler.toCollectionModel(transfertResource.findByAccountFrom_IdEqualsIgnoreCaseOrAccountTo_IdEqualsIgnoreCase(id,id)));
+    }
+
+
+
     // GET one
     @GetMapping(value = "/{transfertId}")
     public ResponseEntity<?> getOneTransfert(@PathVariable("transfertId") String id) {
@@ -80,12 +89,11 @@ public class TransfertRepresentation {
 
         //      Si tout est OK alors on crédite le destinataire
         Card creditedCard = cardResource.findById(optionalAccountTo.get().getFkidcard()).get();
+        Double amountInRecieverMoney = transfertinput.getAmount()* Exchangerate.exchangeRate.get(optionalAccountTo.get().getCountry());
         Double moneyBeforeCredit = Double.parseDouble(creditedCard.getCash());
-        Double moneyAfterCredit = moneyBeforeCredit + transfertinput.getAmount();
+        Double moneyAfterCredit = moneyBeforeCredit + amountInRecieverMoney;
         creditedCard.setCash(String.valueOf(moneyAfterCredit));
         cardResource.save(creditedCard);
-
-
 
 //      Si tout est OK alors on procède au transfert
         Transfert tranfert2Save = new Transfert(

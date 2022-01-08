@@ -18,10 +18,12 @@ public class AccountInput {
     @NotNull
     @NotBlank
     @Size(min=2, max=20)
+    @Pattern(regexp = "^[a-zA-Z]*$") // only alphabets
     private String name;
     @NotNull
     @NotBlank
     @Size(min=2, max=20)
+    @Pattern(regexp = "^[a-zA-Z]*$") // only alphabets
     private String surname;
     @NotNull
     private Account.Country country;
@@ -34,9 +36,9 @@ public class AccountInput {
     @NotBlank
     @Pattern(regexp = "^\\+(?:[0-9]●?){6,14}[0-9]$")
     private String phoneGlobal;
-    @NotNull
-    @NotBlank
-    @Pattern(regexp = "\\b[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?\\b")
+//    @NotNull
+//    @NotBlank
+//    @Pattern(regexp = "\\b[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?\\b")
     private String iban;
 
     private Card card;

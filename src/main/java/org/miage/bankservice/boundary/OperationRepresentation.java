@@ -2,6 +2,7 @@ package org.miage.bankservice.boundary;
 
 import org.miage.bankservice.assembler.OperationAssembler;
 import org.miage.bankservice.entity.*;
+import org.miage.bankservice.miscellaneous.Exchangerate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.server.ExposesResourceFor;
@@ -55,9 +56,25 @@ public class OperationRepresentation {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // GET proceed shopservice operation
+    @GetMapping("/shopservice/shopid/{shopid}/customerid/{customerid}/amount/{amount}")
+    public ResponseEntity<?> proceedShopserviceOperation(@PathVariable("shopid") String shopid,
+                                                            @PathVariable("customerid") String customerid,
+                                                            @PathVariable Double amount) {
+        OperationInput operationInput = new OperationInput();
+        operationInput.setAmount(amount);
+        operationInput.setIdaccountShop(shopid);
+        operationInput.setIdaccountCustomer(customerid);
+        // On essaie de créer l'opération
+        saveOperation(operationInput);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping
     @Transactional
     public ResponseEntity<?> saveOperation(@RequestBody @Valid OperationInput operationInput)  {
+        System.out.println(operationInput.getIdaccountCustomer());
+        System.out.println(operationInput.getIdaccountShop());
 //      Une opération se fait entre deux comptes, on vérifie que les comptes spécifiés existent bien
         Optional<Account> optionalAccountFrom = accountResource.findById(operationInput.getIdaccountCustomer());
         Optional<Account> optionalAccountTo = accountResource.findById(operationInput.getIdaccountShop());
@@ -72,10 +89,34 @@ public class OperationRepresentation {
             return ResponseEntity.badRequest().body(errorMessage);
         }
 
-//      Si tout est OK alors on débite le client
+        // Une transaction ne peut se faire si le customer a bloqué sa carte
         Card customerCard = cardResource.findById(optionalAccountFrom.get().getFkidcard()).get();
+        if (customerCard.isBlocked()) {
+            // L'utilisateur n'utilise un id de compte (shop) qui n'existe pas
+            String errorMessage = "{\"message\":\"Request not processed, reason is : Customer's card is blocked\"}";
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
+        // On ne réalise pas la transaction si :
+        //      le customer utilise la sécurité GPS
+        //      le client et le shop ne sont pas dans le même pays
+        if (customerCard.isRegionLocked() && (optionalAccountTo.get().getCountry() == optionalAccountFrom.get().getCountry())) {
+            // L'utilisateur n'utilise un id de compte (shop) qui n'existe pas
+            String errorMessage = "{\"message\":\"Request not processed, reason is : region lock is enable and countries are different\"}";
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
+        // On arrête si le customer dépasse la slidinglimit avec cette transaction
+        if (operationInput.getAmount() > customerCard.getSlidinglimit()) {
+            // L'utilisateur n'utilise un id de compte (shop) qui n'existe pas
+            String errorMessage = "{\"message\":\"Request not processed, reason is : the amount of the transaction exceeds the limit. \"}";
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
+//      Si tout est OK alors on débite le client
         Double moneyBeforeDebit = Double.parseDouble(customerCard.getCash());
-        Double moneyAfterDebit = moneyBeforeDebit - operationInput.getAmount();
+        Double priceInEuro = operationInput.getAmount()*Exchangerate.exchangeRate.get(optionalAccountTo.get().getCountry());
+        Double moneyAfterDebit = moneyBeforeDebit - priceInEuro;
         customerCard.setCash(String.valueOf(moneyAfterDebit));
         cardResource.save(customerCard);
 

@@ -6,28 +6,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity     // ORM: mapping des instances de la classe comme nuplet dans H2
+@NamedQueries({
+        @NamedQuery(name = "Transfert.findByAccountFrom_IdEqualsAndAccountTo_IdEquals",
+                query = "select t from Transfert t where t.accountFrom.id = :id1 and t.accountTo.id = :id2")
+})
+
+@Entity
+// ORM: mapping des instances de la classe comme nuplet dans H2
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class Transfert {
     @Id
     private String idtransfert;
     private LocalDateTime localdatetime;
     private Double amount;
     @JsonBackReference
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="accountFrom_id", nullable=false)
     private Account accountFrom;
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="accountTo_id", nullable=false)
     private Account accountTo;
 }
+

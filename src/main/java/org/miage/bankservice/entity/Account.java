@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -17,19 +18,21 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account implements Serializable {
-    private static final long serialVersionUID = 765432234567L;
+
     public enum Country {
         FRANCE, GERMANY, ITALY, MOLDOVA, JAPAN, USA, UK;
     }
-//    @JoinColumn(name = "idcard", referencedColumnName = "idcard") // name : nom de la colonne de la FK à créer et referencedColumnName = id de la table card
 
     @Id
     private String id;
     private String name;
     private String surname;
     private Country country;
+    @Column(unique=true)
     private String passportNumber;
+    @Column(unique=true)
     private String phoneGlobal;
+    @Column(unique=true)
     private String iban;
 
     private String fkidcard;

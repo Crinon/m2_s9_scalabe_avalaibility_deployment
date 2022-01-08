@@ -13,10 +13,11 @@
 	<artifactId>myownrevolut</artifactId>
 	<version>1.0</version>
 	<name>myownrevolut</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Demoo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -80,6 +81,13 @@
 			<artifactId>spring-boot-starter-logging</artifactId>
 			<version>2.6.2</version>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+
     </dependencies>
 	<build>
 		<plugins>
