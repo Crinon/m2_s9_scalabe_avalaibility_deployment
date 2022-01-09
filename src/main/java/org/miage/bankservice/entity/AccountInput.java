@@ -18,12 +18,12 @@ public class AccountInput {
     @NotNull
     @NotBlank
     @Size(min=2, max=20)
-    @Pattern(regexp = "^[a-zA-Z]*$") // only alphabets
+    @Pattern(regexp = "(?i)^(?:(?![×Þß÷þø])[-'a-zÀ-ÿ])+$") // only alphabets + accent
     private String name;
     @NotNull
     @NotBlank
     @Size(min=2, max=20)
-    @Pattern(regexp = "^[a-zA-Z]*$") // only alphabets
+    @Pattern(regexp = "(?i)^(?:(?![×Þß÷þø])[-'a-zÀ-ÿ])+$") // only alphabets + accents
     private String surname;
     @NotNull
     private Account.Country country;

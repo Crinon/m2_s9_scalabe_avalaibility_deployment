@@ -76,30 +76,31 @@ public class TransfertRepresentation {
         }
         if (!optionalAccountTo.isPresent()) {
             // L'utilisateur utilise un id de compte destinataire n'existant pas
-            String errorMessage = "{\"message\":\"Request not processed, reason is : Reciever account not found\"}";
+            String errorMessage = "{\"message\":\"Request not processed, reason is : Receiver account not found\"}";
             return ResponseEntity.badRequest().body(errorMessage);
         }
 
-//      Si tout est OK alors on débite l'expéditeur
-        Card debitedCard = cardResource.findById(optionalAccountFrom.get().getFkidcard()).get();
-        Double moneyBeforeDebit = Double.parseDouble(debitedCard.getCash());
+        // Si tout est OK alors on débite le sender avec la somme qu'il envoie
+        Card senderCard = cardResource.findById(optionalAccountFrom.get().getFkidcard()).get();
+        Double moneyBeforeDebit = Double.parseDouble(senderCard.getCash());
         Double moneyAfterDebit = moneyBeforeDebit - transfertinput.getAmount();
-        debitedCard.setCash(String.valueOf(moneyAfterDebit));
-        cardResource.save(debitedCard);
+        senderCard.setCash(String.valueOf(moneyAfterDebit));
+        cardResource.save(senderCard);
 
-        //      Si tout est OK alors on crédite le destinataire
-        Card creditedCard = cardResource.findById(optionalAccountTo.get().getFkidcard()).get();
-        Double amountInRecieverMoney = transfertinput.getAmount()* Exchangerate.exchangeRate.get(optionalAccountTo.get().getCountry());
-        Double moneyBeforeCredit = Double.parseDouble(creditedCard.getCash());
-        Double moneyAfterCredit = moneyBeforeCredit + amountInRecieverMoney;
-        creditedCard.setCash(String.valueOf(moneyAfterCredit));
-        cardResource.save(creditedCard);
+        // Si tout est OK alors on crédite le receiver avec la somme reçue convertie en monnaie locale
+        Card receiverCard = cardResource.findById(optionalAccountTo.get().getFkidcard()).get();
+        Double moneyBeforeCredit = Double.parseDouble(receiverCard.getCash());
+        Double amountInReceiverMoney = transfertinput.getAmount()*Exchangerate.exchangeRate.get(optionalAccountTo.get().getCountry());
+        Double moneyAfterCredit = moneyBeforeCredit + amountInReceiverMoney;
+        receiverCard.setCash(String.valueOf(moneyAfterCredit));
+        cardResource.save(receiverCard);
 
 //      Si tout est OK alors on procède au transfert
         Transfert tranfert2Save = new Transfert(
                 UUID.randomUUID().toString(),
                 LocalDateTime.now(),
                 transfertinput.getAmount(),
+                Exchangerate.exchangeRate.get(optionalAccountTo.get().getCountry()),
                 optionalAccountFrom.get(),
                 optionalAccountTo.get()
         );

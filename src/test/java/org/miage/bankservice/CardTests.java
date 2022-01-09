@@ -135,7 +135,7 @@ public class CardTests {
                 .statusCode(HttpStatus.SC_OK)
                 .and()
                 .assertThat()
-                .body("size()",equalTo(2));
+                .body("_embedded.cards.size()",equalTo(2));
     }
 
     @Test

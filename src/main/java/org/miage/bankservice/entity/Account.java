@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -37,9 +34,9 @@ public class Account implements Serializable {
 
     private String fkidcard;
 
-    @OneToMany( targetEntity=Transfert.class, mappedBy="accountTo" )
+    @OneToMany( targetEntity=Transfert.class, mappedBy="accountTo", cascade = CascadeType.ALL )
     private Set<Transfert> transfertsReceived;
-    @OneToMany( targetEntity=Transfert.class, mappedBy="accountFrom" )
+    @OneToMany( targetEntity=Transfert.class, mappedBy="accountFrom", cascade = CascadeType.ALL )
     private Set<Transfert> transfertsSent;
 
 

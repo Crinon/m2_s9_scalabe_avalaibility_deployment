@@ -14,8 +14,6 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OperationInput {
-    private Environment env;
-
     @NotNull
     @NotBlank
     private String wording;
@@ -24,9 +22,6 @@ public class OperationInput {
     // @DecimalMax("${app.operation.max-amount}")
     @DecimalMax("5000")
     private Double amount;
-    @DecimalMin("0.01")
-    @DecimalMax("1.00")
-    private Double conversionRate;
 
     // Il se peut que la catégorie ne soit pas connue.
     private Operation.Category category;

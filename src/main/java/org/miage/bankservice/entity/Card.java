@@ -29,7 +29,7 @@ public class Card {
     private int code = Integer.parseInt(ToolBox.generateCardNumber(4));
     private int cryptogram = Integer.parseInt(ToolBox.generateCardNumber(3));
     private boolean blocked = false;
-    private boolean regionLocked = true;
+    private boolean regionLocked = false;
     private int slidinglimit = 5000;
     private boolean contactless = true;
     // Obligation de placer 300€ à l'ouverture d'un compte

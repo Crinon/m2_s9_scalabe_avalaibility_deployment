@@ -56,6 +56,12 @@ public class OperationRepresentation {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // GET all operations from account
+    @GetMapping(value = "/account/{accountId}")
+    public ResponseEntity<?> getAllTransfertByAccount(@PathVariable("accountId") String id) {
+        return ResponseEntity.ok(operationAssembler.toCollectionModel(operationResource.findByAccountFrom_IdEqualsIgnoreCaseOrAccountTo_IdEqualsIgnoreCase(id,id)));
+    }
+
     // GET proceed shopservice operation
     @GetMapping("/shopservice/shopid/{shopid}/customerid/{customerid}/amount/{amount}")
     public ResponseEntity<?> proceedShopserviceOperation(@PathVariable("shopid") String shopid,
@@ -66,8 +72,29 @@ public class OperationRepresentation {
         operationInput.setIdaccountShop(shopid);
         operationInput.setIdaccountCustomer(customerid);
         // On essaie de créer l'opération
-        saveOperation(operationInput);
-        return ResponseEntity.ok().build();
+        ResponseEntity response = saveOperation(operationInput);
+        return response;
+    }
+
+    // GET proceed shopservice operation
+    @GetMapping("/shopservice/shopid/{shopid}/customercardnumber/{customercardnumber}/amount/{amount}")
+    public ResponseEntity<?> proceedDirectShopserviceOperation(@PathVariable("shopid") String shopid,
+                                                         @PathVariable("customercardnumber") String customercardnumber,
+                                                         @PathVariable Double amount) {
+        // A partir du numéro de carte du client on trouve son accountid
+        Optional<Card> customercard = cardResource.findByNumberEqualsIgnoreCase(customercardnumber);
+        if (!customercard.isPresent()) {
+            String errorMessage = "{\"message\":\"Request not processed, reason is : card number does not exist\"}";
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+        Account accountCustomer = accountResource.findByFkidcardEqualsIgnoreCase(customercard.get().getIdcard());
+        OperationInput operationInput = new OperationInput();
+        operationInput.setAmount(amount);
+        operationInput.setIdaccountShop(shopid);
+        operationInput.setIdaccountCustomer(accountCustomer.getId());
+        // On essaie de créer l'opération
+        ResponseEntity response = saveOperation(operationInput);
+        return response;
     }
 
     @PostMapping
@@ -100,7 +127,7 @@ public class OperationRepresentation {
         // On ne réalise pas la transaction si :
         //      le customer utilise la sécurité GPS
         //      le client et le shop ne sont pas dans le même pays
-        if (customerCard.isRegionLocked() && (optionalAccountTo.get().getCountry() == optionalAccountFrom.get().getCountry())) {
+        if (customerCard.isRegionLocked() && (optionalAccountTo.get().getCountry() != optionalAccountFrom.get().getCountry())) {
             // L'utilisateur n'utilise un id de compte (shop) qui n'existe pas
             String errorMessage = "{\"message\":\"Request not processed, reason is : region lock is enable and countries are different\"}";
             return ResponseEntity.badRequest().body(errorMessage);
@@ -138,7 +165,7 @@ public class OperationRepresentation {
                 LocalDateTime.now(),
                 operationInput.getWording(),
                 operationInput.getAmount(),
-                operationInput.getConversionRate(),
+                Exchangerate.exchangeRate.get(optionalAccountTo.get().getCountry()),
                 recipientName,
                 operationInput.getCategory(),
                 countryShop,
@@ -146,7 +173,7 @@ public class OperationRepresentation {
                 optionalAccountTo.get()
         );
         Operation operationSaved =operationResource.save(operation2Save);
-        URI location = linkTo(AccountRepresentation.class).slash(operationSaved.getId()).toUri();
+        URI location = linkTo(OperationRepresentation.class).slash(operationSaved.getId()).toUri();
         return ResponseEntity.created(location).build();
     }
 }

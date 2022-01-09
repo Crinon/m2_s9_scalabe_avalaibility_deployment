@@ -25,7 +25,7 @@ public class TransfertAssembler implements RepresentationModelAssembler<Transfer
                 linkTo(methodOn(AccountRepresentation.class)
                         .getOneAccount(transfert.getAccountFrom().getId())).withRel("account_sender"),
                 linkTo(methodOn(AccountRepresentation.class)
-                        .getOneAccount(transfert.getAccountTo().getId())).withRel("account_reciever"),
+                        .getOneAccount(transfert.getAccountTo().getId())).withRel("account_receiver"),
                 linkTo(methodOn(TransfertRepresentation.class)
                         .getAllTransferts()).withRel("collection"));
     }

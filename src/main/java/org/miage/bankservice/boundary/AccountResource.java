@@ -9,4 +9,6 @@ public interface AccountResource extends JpaRepository<Account, String>{
     Optional<Account> findByPassportNumberEqualsIgnoreCase(String passportNumber);
     Optional<Account> findByPhoneGlobalEqualsIgnoreCase(String phoneGlobal);
 
+    Account findByFkidcardEqualsIgnoreCase(String fkidcard);
+
 }

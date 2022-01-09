@@ -8,25 +8,30 @@ La base de données (exclusivement en H2) est sauvegardée à la racine du proje
 
 # Points du sujet non traité :
 carte bancaire virtuelle
+une seule carte par compte
 # Ambiguités du sujet :
 solde d'un compte avec déficit illimité
-une seule carte par compte
 
-#TODO code
-tests
+
 #TODO archi
-sécurité
-scalabilité
-circuit breaker
-load balancer (services non trouvées sur consul : localhost:8500)
-dockeriser
-SWAGGER
 
-un script de création/destruction de la base de données ou de peuplement de la base si
+.body("_embedded.operations.size()",equalTo(3));
+
+-sécurité
+-circuit breaker
+-load balancer (services non trouvées sur consul : localhost:8500)
+-dockeriser
+-SWAGGER
+-un script de création/destruction de la base de données ou de peuplement de la base si
 vous utilisez H2, les fichiers Docker si vous utilisez Docker,
 
 un document expliquant comment vous avez géré les différents points pris en compte pour
 l’évaluation (réponse aux besoins, conception, réalisation, sécurité).
+
+clean import 
+clean sysout
+package partout
+boost coverage
 
 # Dev : config intellij pour connexion H2 : jdbc:h2:file:./database/myownrevolutdatabase
 # Dev : mvn spring-boot:run 

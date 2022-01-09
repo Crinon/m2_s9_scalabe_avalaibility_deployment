@@ -1,20 +1,13 @@
 package org.miage.bankservice;
 
-import static io.restassured.RestAssured.when;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.apache.http.HttpStatus;
 import org.hamcrest.CoreMatchers;
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertThrows;
-
 import org.miage.bankservice.boundary.AccountResource;
 import org.miage.bankservice.boundary.CardResource;
 import org.miage.bankservice.entity.Account;
@@ -25,18 +18,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.apache.http.HttpStatus;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static io.restassured.RestAssured.given;
-import io.restassured.RestAssured;
-
 
 import java.net.URL;
-import java.util.Map;
 import java.util.UUID;
+
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class AccountTests {
@@ -126,7 +117,7 @@ class AccountTests {
 								.statusCode(HttpStatus.SC_OK)
 								.and()
 								.assertThat()
-								.body("size()",equalTo(2));
+				.body("_embedded.accounts.size()",equalTo(2));
 	}
 
 	@Test

@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 
 public class TransfertInput {
-    private LocalDateTime localdatetime;
     @NotNull
     @DecimalMin("0.01")
     @DecimalMax("5000.00")
