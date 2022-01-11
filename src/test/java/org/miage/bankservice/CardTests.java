@@ -1,12 +1,10 @@
 package org.miage.bankservice;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import org.apache.http.HttpStatus;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
-import static io.restassured.RestAssured.when;
-
-import java.net.URL;
-import java.util.UUID;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.miage.bankservice.boundary.AccountResource;
@@ -15,19 +13,19 @@ import org.miage.bankservice.entity.Account;
 import org.miage.bankservice.entity.AccountInput;
 import org.miage.bankservice.entity.Card;
 import org.miage.bankservice.miscellaneous.ToolBox;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.apache.http.HttpStatus;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.equalTo;
+
+import java.net.URL;
+import java.util.UUID;
+
 import static io.restassured.RestAssured.given;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
+import static io.restassured.RestAssured.when;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class CardTests {
@@ -46,6 +44,7 @@ public class CardTests {
         cardResource.deleteAll();
         RestAssured.port = port;
     }
+
 
     @Test
     public void pingCards() {
@@ -70,17 +69,16 @@ public class CardTests {
                 ToolBox.generateIBAN(),
                 newCard.getIdcard(),
                 null,
-                null
-        );
+                null, "a");
         accountResource.save(account);
         cardResource.save(newCard);
-        Response response = when().get("/cards/"+newCard.getIdcard())
+        Response response = when().get("/cards/" + newCard.getIdcard())
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
         String jsonAsString = response.asString();
-        assertThat(jsonAsString,containsString("300.00"));
+        assertThat(jsonAsString, containsString("300.00"));
     }
 
     @Test
@@ -94,8 +92,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -118,7 +115,7 @@ public class CardTests {
         String jsonAsString = responseGet.asString();
         JSONObject json = new JSONObject(jsonAsString);
         String cardid = json.getString("fkidcard");
-        when().get("/cards/"+cardid)
+        when().get("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -135,7 +132,7 @@ public class CardTests {
                 .statusCode(HttpStatus.SC_OK)
                 .and()
                 .assertThat()
-                .body("_embedded.cards.size()",equalTo(2));
+                .body("_embedded.cards.size()", equalTo(2));
     }
 
     @Test
@@ -151,17 +148,16 @@ public class CardTests {
                 ToolBox.generateIBAN(),
                 newCard.getIdcard(),
                 null,
-                null
-        );
+                null, "a");
         accountResource.save(account);
         cardResource.save(newCard);
-        Response response = when().get("/cards/cardid/"+newCard.getNumber())
+        Response response = when().get("/cards/cardid/" + newCard.getNumber())
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
         String jsonAsString = response.asString();
-        assertThat(jsonAsString,containsString("300.00"));
+        assertThat(jsonAsString, containsString("300.00"));
     }
 
     @Test
@@ -175,8 +171,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -210,7 +205,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -228,8 +223,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -263,7 +257,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .extract()
@@ -281,8 +275,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -316,7 +309,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -334,8 +327,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -369,7 +361,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .extract()
@@ -387,8 +379,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -422,7 +413,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -440,8 +431,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -475,7 +465,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .extract()
@@ -493,8 +483,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -528,7 +517,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -546,8 +535,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -581,7 +569,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .extract()
@@ -599,8 +587,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -634,7 +621,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .extract()
@@ -652,8 +639,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -687,7 +673,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .extract()
@@ -705,8 +691,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -740,7 +725,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .extract()
@@ -759,8 +744,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -794,7 +778,7 @@ public class CardTests {
                 .body(JSON_DATA)
                 .contentType(ContentType.JSON)
                 .when()
-                .patch("/cards/"+cardid)
+                .patch("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .extract()
@@ -803,7 +787,7 @@ public class CardTests {
 
 
     @Test
-    public void assemblerSelfAccount() throws Exception{
+    public void assemblerSelfAccount() throws Exception {
         AccountInput accountInput1 = new AccountInput(
                 "Peter",
                 "MacCalloway",
@@ -813,8 +797,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response responseAccount = given()
@@ -838,7 +821,7 @@ public class CardTests {
         JSONObject json = new JSONObject(jsonAsString);
         String cardid = json.getString("fkidcard");
 
-        Response responseGet = when().get("/cards/"+cardid)
+        Response responseGet = when().get("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -858,7 +841,7 @@ public class CardTests {
     }
 
     @Test
-    public void assemblerCollectionAccount() throws Exception{
+    public void assemblerCollectionAccount() throws Exception {
         AccountInput accountInput1 = new AccountInput(
                 "Peter",
                 "MacCalloway",
@@ -868,8 +851,7 @@ public class CardTests {
                 null,
                 null,
                 null,
-                null
-        );
+                null, "a");
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response responseAccount = given()
@@ -893,7 +875,7 @@ public class CardTests {
         JSONObject json = new JSONObject(jsonAsString);
         String cardid = json.getString("fkidcard");
 
-        Response responseGet = when().get("/cards/"+cardid)
+        Response responseGet = when().get("/cards/" + cardid)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()

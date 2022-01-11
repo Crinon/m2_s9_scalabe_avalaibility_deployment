@@ -1,6 +1,8 @@
 package org.miage.bankservice.miscellaneous;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -27,6 +29,11 @@ public class CustomErrorHandler {
         return new HashMap<>() {{
             put("Requête(s) malformée(s)", errors);
         }};
+    }
+
+    public static String currentUsername() {
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return user.getUsername();
     }
 
 }

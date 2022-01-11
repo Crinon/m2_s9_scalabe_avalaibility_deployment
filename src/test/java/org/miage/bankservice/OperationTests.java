@@ -52,6 +52,13 @@ public class OperationTests {
         cardResource.deleteAll();
         accountResource.deleteAll();
         RestAssured.port = port;
+        String JSON_DATA = ""
+                + "    {"
+                + "      \"username\" : \"ADMIN\","
+                + "      \"password\" : \"ADMIN\""
+                + "}";
+        given().body(JSON_DATA).contentType(ContentType.JSON).when().post("/login");
+
     }
 
     @Test
@@ -76,9 +83,8 @@ public class OperationTests {
                 "+33675896767",
                 ToolBox.generateIBAN(),
                 newCard1.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer);
         cardResource.save(newCard1);
 
@@ -92,9 +98,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 
@@ -134,9 +139,8 @@ public class OperationTests {
                 "+33675896767",
                 ToolBox.generateIBAN(),
                 newCard1.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer);
         cardResource.save(newCard1);
 
@@ -150,9 +154,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 
@@ -213,9 +216,8 @@ public class OperationTests {
                 "+33675896767",
                 ToolBox.generateIBAN(),
                 newCard1.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer);
         cardResource.save(newCard1);
 
@@ -229,9 +231,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 
@@ -245,9 +246,8 @@ public class OperationTests {
                 "+4960000767",
                 ToolBox.generateIBAN(),
                 newCard3.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer2);
         cardResource.save(newCard3);
 
@@ -344,9 +344,8 @@ public class OperationTests {
                 "+49675896767",
                 null,
                 null,
-                null,
-                null
-        );
+				null,
+				null,"a"        );
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response responseCustomer = given()
@@ -379,10 +378,9 @@ public class OperationTests {
                 "64GB75640",
                 "+49675896770",
                 null,
-                null,
-                null,
-                null
-        );
+				null,
+				null,
+				null,"a"        );
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -442,10 +440,9 @@ public class OperationTests {
                 "64FR75640",
                 "+49675896767",
                 null,
-                null,
-                null,
-                null
-        );
+				null,
+				null,
+				null,"a"        );
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response responseCustomer = given()
@@ -500,10 +497,9 @@ public class OperationTests {
                 "64GB75640",
                 "+49675896770",
                 null,
-                null,
-                null,
-                null
-        );
+				null,
+				null,
+				null,"a"        );
 
         // Envoi des inputs et vérification du code HTTP201 CREATED
         Response response = given()
@@ -559,9 +555,8 @@ public class OperationTests {
                 "+33675896767",
                 ToolBox.generateIBAN(),
                 newCard1.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer);
         cardResource.save(newCard1);
 
@@ -597,9 +592,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 
@@ -636,9 +630,8 @@ public class OperationTests {
                 "+33675896767",
                 ToolBox.generateIBAN(),
                 newCard1.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer);
         cardResource.save(newCard1);
 
@@ -652,9 +645,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 
@@ -690,9 +682,8 @@ public class OperationTests {
                 "+33675896767",
                 ToolBox.generateIBAN(),
                 newCard1.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer);
         cardResource.save(newCard1);
 
@@ -706,9 +697,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 
@@ -738,9 +728,8 @@ public class OperationTests {
                 "+33675896767",
                 ToolBox.generateIBAN(),
                 newCard1.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer);
         cardResource.save(newCard1);
 
@@ -754,9 +743,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 
@@ -786,9 +774,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 
@@ -816,9 +803,8 @@ public class OperationTests {
                 "+33675896767",
                 ToolBox.generateIBAN(),
                 newCard1.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer);
         cardResource.save(newCard1);
 
@@ -832,9 +818,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 
@@ -893,9 +878,8 @@ public class OperationTests {
                 "+33675896767",
                 ToolBox.generateIBAN(),
                 newCard1.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer);
         cardResource.save(newCard1);
 
@@ -909,9 +893,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 
@@ -970,9 +953,8 @@ public class OperationTests {
                 "+33675896767",
                 ToolBox.generateIBAN(),
                 newCard1.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer);
         cardResource.save(newCard1);
 
@@ -986,9 +968,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 
@@ -1047,9 +1028,8 @@ public class OperationTests {
                 "+33675896767",
                 ToolBox.generateIBAN(),
                 newCard1.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountCustomer);
         cardResource.save(newCard1);
 
@@ -1063,9 +1043,8 @@ public class OperationTests {
                 "+49675896767",
                 ToolBox.generateIBAN(),
                 newCard2.getIdcard(),
-                null,
-                null
-        );
+				null,
+				null,"a"        );
         accountResource.save(accountShop);
         cardResource.save(newCard2);
 

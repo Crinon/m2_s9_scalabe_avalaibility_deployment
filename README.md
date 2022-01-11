@@ -32,6 +32,7 @@ clean import
 clean sysout
 package partout
 boost coverage
+nettoyer descrption pom etc
 
 # Dev : config intellij pour connexion H2 : jdbc:h2:file:./database/myownrevolutdatabase
 # Dev : mvn spring-boot:run 

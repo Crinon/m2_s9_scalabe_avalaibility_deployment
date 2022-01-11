@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Set;
 
 @Entity     // ORM: mapping des instances de la classe comme nuplet dans H2
@@ -15,6 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account implements Serializable {
+
 
     public enum Country {
         FRANCE, GERMANY, ITALY, MOLDOVA, JAPAN, USA, UK;
@@ -38,6 +42,9 @@ public class Account implements Serializable {
     private Set<Transfert> transfertsReceived;
     @OneToMany( targetEntity=Transfert.class, mappedBy="accountFrom", cascade = CascadeType.ALL )
     private Set<Transfert> transfertsSent;
+
+    private String password;
+
 
 
 }

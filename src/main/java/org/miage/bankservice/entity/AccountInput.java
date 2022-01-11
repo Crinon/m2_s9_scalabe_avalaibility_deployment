@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.validation.constraints.Email;
 import java.util.Set;
 
 @Data
@@ -45,6 +46,11 @@ public class AccountInput {
 
     private Set<Transfert> transfertsReceived;
     private Set<Transfert> transfertsSent;
+
+    @NotNull
+    @NotBlank
+    private String password;
+
 }
 
 

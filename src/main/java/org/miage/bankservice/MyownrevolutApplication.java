@@ -15,20 +15,13 @@ import javax.persistence.metamodel.Type;
 public class MyownrevolutApplication {
 
 	public static void main(String[] args) {
-		System.out.println("ufhriufhre");
-		System.out.println("ufhriufhre");
-		System.out.println("ufhriufhre");
-		System.out.println("ufhriufhre");
-		System.out.println("ufhriufhre");
-		System.out.println("ufhriufhre");
-		System.out.println("ufhriufhre");
-		System.out.println("ufhriufhre");
 		SpringApplication.run(MyownrevolutApplication.class, args);
 	}
 
 	// OpenAPI descriptions will be available at the path /v3/api-docs by default
 	// http://localhost:8082/v3/api-docs/
-
+	// http://localhost:8082/swagger-ui/index.html
+	// puis  /v3/api-docs
 	@Bean
 	public OpenAPI bankAPI() {
 		return new OpenAPI().info(new Info()

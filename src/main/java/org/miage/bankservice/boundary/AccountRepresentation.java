@@ -1,5 +1,6 @@
 package org.miage.bankservice.boundary;
 
+import lombok.RequiredArgsConstructor;
 import org.miage.bankservice.assembler.AccountAssembler;
 import org.miage.bankservice.entity.*;
 import org.miage.bankservice.miscellaneous.ToolBox;
@@ -8,12 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.miage.bankservice.miscellaneous.CustomErrorHandler;
 
+import javax.annotation.security.RolesAllowed;
 import javax.persistence.Column;
 import javax.persistence.OneToMany;
 import javax.transaction.Transactional;
@@ -29,38 +32,37 @@ import java.util.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
-@RequestMapping(value="/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
 @ExposesResourceFor(Account.class)
+@RequiredArgsConstructor
 public class AccountRepresentation extends CustomErrorHandler {
-    private static final Logger LOGGER=LoggerFactory.getLogger(AccountRepresentation.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountRepresentation.class);
 
     private final AccountResource accountResource;
     private final AccountAssembler assembler;
     private final AccountValidator accountValidator;
     private final CardValidator cardValidator;
     private final CardResource cardResource;
+    private final PasswordEncoder passwordEncoder;
 
-    public AccountRepresentation(AccountResource accountResource,
-                                 CardResource cardResource,
-                                 CardValidator cardValidator,
-                                 AccountAssembler assembler,
-                                 AccountValidator accountValidator) {
-        this.accountResource = accountResource;
-        this.assembler = assembler;
-        this.cardValidator = cardValidator;
-        this.cardResource = cardResource;
-        this.accountValidator = accountValidator;
-    }
 
     // GET all
     @GetMapping
-    public ResponseEntity<?> getAllAccounts() {
-        System.out.println(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"));
-        return ResponseEntity.ok(assembler.toCollectionModel(accountResource.findAll()));
+    @RolesAllowed("ROLE_USER")
+    public ResponseEntity<?> getConnectedAccount() {
+//        System.out.println(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"));
+        System.out.println(currentUsername());
+        // Vérification de l'exitence de l'account
+        if (accountResource.findByPassportNumberEqualsIgnoreCase(currentUsername()).get() == null) {
+            String errorMessage = "{\"message\":\"Request not processed, reason is : Passport does not exist\"}";
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+        return ResponseEntity.ok(assembler.toModel(accountResource.findByPassportNumberEqualsIgnoreCase(currentUsername()).get()));
     }
 
     // GET one
-    @GetMapping(value="/{accountId}")
+    @RolesAllowed("ROLE_USER")
+    @GetMapping(value = "/{accountId}")
     public ResponseEntity<?> getOneAccount(@PathVariable("accountId") String id) {
         return Optional.ofNullable(accountResource.findById(id)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))
@@ -69,7 +71,7 @@ public class AccountRepresentation extends CustomErrorHandler {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<?> saveAccount(@RequestBody @Valid AccountInput account)  {
+    public ResponseEntity<?> saveAccount(@RequestBody @Valid AccountInput account) {
 
         // On vérifie que le passeport donné n'est pas déjà utilisé
         Optional<Account> optionalAccountPassport = accountResource.findByPassportNumberEqualsIgnoreCase(account.getPassportNumber());
@@ -88,10 +90,9 @@ public class AccountRepresentation extends CustomErrorHandler {
         Card newCard = new Card();
         cardValidator.validate(new CardInput(newCard.getNumber(), newCard.getCode(),
                 newCard.getCryptogram(), newCard.isBlocked(), newCard.isRegionLocked(), newCard.getSlidinglimit(), newCard.isContactless(), newCard.getCash()));
-        LOGGER.warn(newCard.getNumber());
 
         Account account2Save = new Account(
-            UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
                 account.getName(),
                 account.getSurname(),
                 account.getCountry(),
@@ -100,7 +101,8 @@ public class AccountRepresentation extends CustomErrorHandler {
                 ToolBox.generateIBAN(),
                 newCard.getIdcard(),
                 account.getTransfertsReceived(),
-                account.getTransfertsSent()
+                account.getTransfertsSent(),
+                passwordEncoder.encode(account.getPassword())
         );
         cardResource.save(newCard);
         Account saved = accountResource.save(account2Save);
@@ -112,40 +114,49 @@ public class AccountRepresentation extends CustomErrorHandler {
     // PATCH
     @PatchMapping(value = "/{accountId}")
     @Transactional
+    @RolesAllowed("ROLE_USER")
     public ResponseEntity<?> patchAccount(@PathVariable("accountId") String accountId,
-                                               @RequestBody Map<Object, Object> fields) {
+                                          @RequestBody Map<Object, Object> fields) {
         Optional<Account> body = accountResource.findById(accountId);
-        if (body.isPresent()) {
+
+        // Des données de patch doivent être présentent et le compte demandé en paramètre doit exister en base
+        if (body.isPresent() && (accountResource.findById(accountId).get() != null)) {
             Account account = body.get();
+            // On vérifie que le compte connecté est bien celui à patcher => accountId
+            if (accountResource.findByPassportNumberEqualsIgnoreCase(currentUsername()).get().getId() != accountId) {
+                String errorMessage = "{\"message\":\"Request not processed, reason is : accountid provided does not match with account id connected\"}";
+                return ResponseEntity.badRequest().body(errorMessage);
+            }
+
             final boolean[] tryProtectedField = {false};
             fields.forEach((f, v) -> {
                 LOGGER.warn(f.toString());
                 LOGGER.warn(v.toString());
 
                 // Un utilisateur ne peut que modifier un de ces 3 champs
-                if (!Arrays.asList(new String[] {"name","surname","phoneGlobal"}).contains(f.toString())) {
+                if (!Arrays.asList(new String[]{"name", "surname", "phoneGlobal"}).contains(f.toString())) {
                     // L'utilisateur a tenté de PATCH un champ non autorisé
                     tryProtectedField[0] = true;
                 }
 
 
-                if(tryProtectedField[0] == false){
+                if (tryProtectedField[0] == false) {
                     Field field = ReflectionUtils.findField(Account.class, f.toString());
                     field.setAccessible(true);
                     ReflectionUtils.setField(field, account, v);
                 }
 
             });
-            if(tryProtectedField[0] == true){
+            if (tryProtectedField[0] == true) {
                 // L'utilisateur a tenté de PATCH un champ non autorisé
                 String errorMessage = "{\"message\":\"Request not processed, reason is : You cannot change any other field that \"name\",\"surname\",\"phoneGlobal\"\"}";
                 return ResponseEntity.badRequest().body(errorMessage);
             }
-            accountValidator.validate(new AccountInput(account.getName(), account.getSurname(),account.getCountry(),
+            accountValidator.validate(new AccountInput(account.getName(), account.getSurname(), account.getCountry(),
                     account.getPassportNumber(),
                     account.getPhoneGlobal(),
                     account.getIban(),
-                    cardResource.getById(account.getFkidcard()), account.getTransfertsReceived(), account.getTransfertsSent()));
+                    cardResource.getById(account.getFkidcard()), account.getTransfertsReceived(), account.getTransfertsSent(), passwordEncoder.encode(account.getPassword())));
             account.setId(accountId);
             accountResource.save(account);
             return ResponseEntity.ok().build();
