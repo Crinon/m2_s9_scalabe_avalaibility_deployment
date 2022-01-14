@@ -1,0 +1,85 @@
+spring :
+  application:
+    name : gateway-service
+  cloud :
+    gateway :
+      discovery:
+        locator:
+          enabled: true
+        globalcors:
+          cors-configurations:
+            '[/**]':
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+
+      routes :
+        - id: myownrevolut
+          uri: lb://myownrevolut/
+          predicates:
+            - Path=/myownrevolut/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: bankCircuitBreaker
+                fallbackUri: forward:/bank-fallback
+
+    loadbalancer:
+      ribbon :
+        enabled : false
+
+    consul :
+      config :
+        enabled : false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+server :
+  port : 8080
+
+
+
+
+
+
+#spring:
+#  application:
+#    name: bank-gateway-service
+#  cloud:
+#    gateway:
+#      discovery:
+#        locator:
+#          enabled: true
+#      globalcors:
+#        cors-configurations:
+#          '[/**]':
+#            allowedOrigins: '*'
+#            allowedMethods:
+#              - GET
+#      routes:
+#        - id: myownrevolut
+#          uri: lb://myownrevolut/
+#          predicates:
+#            - Path=/myownrevolut/**
+#            - predicates:
+#                - Path=/myownrevolut/**
+#            - filters:
+#                - RewritePath=/myownrevolut/(?<path>.*), /$\{path}
+##          filters:
+##            - name : circuitbreaker
+##              args : myownrevolutCircuitbreaker
+##              fallbackurl : forward:/myownrevolut-fallback
+#    loadbalancer:
+#      ribbon:
+#        enabled: false
+#    consul:
+#      config:
+#        enabled: false
+#
+#server:
+#  port: 8080
+#

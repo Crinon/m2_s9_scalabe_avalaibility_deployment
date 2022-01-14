@@ -1,8 +1,20 @@
-version: "3.9"
+version: "1.0"
 services:
-  web:
-    build: .
+  bank-service:
+    build: ./bank
     ports:
-      - "5000:5000"
-  redis:
-    image: "redis:alpine"
+      - "8082:8082"
+
+  shop-service:
+    build: ./shop
+    # bank-service à la place de localhost de application.properties
+    environment:
+      - APP_URL_SERVICEBANQUE=http://bank-service:8082
+    ports:
+      - "8100:8100"
+    # Droit de communication avec le service de la banque
+    links:
+      - bank-service
+    # Ne pas créer avant le service de la banque
+    depends_on:
+      - bank-service
