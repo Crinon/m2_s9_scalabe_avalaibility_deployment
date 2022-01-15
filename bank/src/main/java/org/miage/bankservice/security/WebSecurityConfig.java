@@ -44,12 +44,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/console/**").permitAll()
                 .antMatchers("/authenticate").permitAll()
-                .antMatchers("/user").permitAll() // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 .antMatchers("/accounts").permitAll() // "create account" open
-                .antMatchers("/cards/cardid/**").permitAll() // "cards/cardid by cardnumber" open
                 .antMatchers("/api-docs/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers("/api/**").authenticated()
+                .antMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated().and().
                 exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -8,7 +8,10 @@ La base de données (exclusivement en H2) est sauvegardée à la racine du proje
 
 # Points du sujet non traité :
 carte bancaire virtuelle
+
 une seule carte par compte
+
+
 # Ambiguités du sujet :
 solde d'un compte avec déficit illimité
 
